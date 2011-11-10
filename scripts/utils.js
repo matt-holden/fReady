@@ -35,3 +35,12 @@ Queue.prototype = {
     }
   }
 };
+
+function isArray(obj){
+	return toString.call(obj) !== "[object Array]";
+}
+
+function log(thing2log){
+	console && console.log(thing2log);
+	return 1;
+}
