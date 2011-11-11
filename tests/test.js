@@ -4,47 +4,57 @@ $(document).ready(function(){
 	function setOutput(string){
 		$output.text(string);
 	}; */
-	module("Load Facebook SDK");
-	asyncTest("Loads Facebook SDK, checks user's status, runs an additional onInit method", function(){
-		expect(2);
+	module("Unit tests should start with a logged in, and connected FB user!");
+	
+	module("Load Facebook SDK / Work with user status");
+	asyncTest("Checks user's status, runs an additional onInit method", function(){
+		//define the number of tests we're expecting
+		var expectCount = 3;
+		//inform QUnit of this number
+		expect(expectCount);
+		
+		//our own, internal version of QUnit's "start"
+		var _start = function(){
+			_start.numCalls = ++(_start.numCalls || 0);
+			if (_start.numCalls == expectCount) start();
+		}
 		
 		minifb.ready({
 			onGetStatus: {
-				UNKNOWN : function(response){
-					ok(true, "User is not logged in");
-					start();
-				},
-				NOT_CONNECTED : function(response){
-					ok(true, "User is logged in but not connected");
-					start();
-				},
 				CONNECTED : function(response){
 					ok(true, "User is logged in and connected");
-					start();
+					_start();
 				}
-			},
+			}/*,
 
 			onStatusChange: {
-				UNKNOWN : function(response){
-					ok(true, "User must have logged out of Facebook");
-					start();
-				},
-				NOT_CONNECTED : function(response){
-					ok(true, "Use is no longer connected");
-					start();
-				},
 				CONNECTED : function(response){
 					ok(true, "User is now logged in and connected");
 					start();
 				}
-			}
+			}*/
 		}, 
 		function(){
-			ok(true, "Just ran an additional ready() function");
-		}); 
-
+			ok(true, "Ran an extra ready() function");
+			_start();
+		});
+		
+		minifb.ready(function(){
+			ok(true, "Ran a ready() function with the minimalist method ;)");
+			_start();
+		});
 
 		minifb.init();
+	});
+	
+	asyncTest("Re-initialize minifb, now as a logged-out user", function(){
+		start();
+		/*
+		FB.logout(function(){
+			//user logged out
+			
+		});
+		*/
 	});
 
 });
