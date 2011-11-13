@@ -1,4 +1,4 @@
-fmini = (function(){
+fReady = (function(){
 	
 /* constants*/
 var UNKNOWN = 1,
@@ -23,11 +23,12 @@ var UNKNOWN = 1,
 		_props.onReadyQueue.add(func);
 	},
 	
-/* PRIVATE PROPERTIES */
+/* PRIVATE PROPERTY OBJECT */
 	_props = {
 		onReadyQueue: new Queue()/*queue object*/,
 		onGetStatus:{/* object */},
 		onStatusChange:{/*array of funcs*/},
+		
 		me:{},
 		authResponse:{},
 		
@@ -36,17 +37,10 @@ var UNKNOWN = 1,
 	
 /* PUBLIC METHODS */
 	init = function(opts){
-		//This should normally be called just once.  If it gets called a second time,
-		//let's delete the FB namespace, and start over.  On re-load, we'll have to re-fetch the SDK
-		//via the async technique.   This will be useful for unit testing,
-		//where we can initiailze minifb more than once in a test.
-		
-		//storing one variables on top of this function: hasBeenCalled
-		if (init.hasBeenCalled){
-			if (window.FB) delete window.FB;
-		}
+		//This should normally be called just once.  If it gets called a second time, kick em out!
+		if (init.hasBeenCalled) return;
 		init.hasBeenCalled = true;
-		
+
 		//local method called 'init' this will initialize the SDK,
 		//we will call this regarless of whether they're using the async load or not
 		var _init = function() {
@@ -60,8 +54,9 @@ var UNKNOWN = 1,
 				xfbml      : true  // parse XFBML
 			});
 
+
 			FB.getLoginStatus(function(response){
-				_props.
+				_props.authResponse = response.authResponse;
 				function callMethod(name){
 					_props.onGetStatus[name] && _props.onGetStatus[name](response);
 				}
@@ -86,20 +81,21 @@ var UNKNOWN = 1,
 			//So, we'll wait for fbAsyncInit to get called by Facebook
 			window.fbAsyncInit = function(){
 				_init();
-			}
+			};
+
 			//Get sdk from facebook
 			(function(d){
-			var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
-			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "//connect.facebook.net/en_US/all.js";
-			d.getElementsByTagName('head')[0].appendChild(js);
-			}(document));	
+				var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+				js = d.createElement('script'); js.id = id; js.async = true;
+				js.src = "//connect.facebook.net/en_US/all.js";
+				d.getElementsByTagName('head')[0].appendChild(js);
+			}(document));
 		} else {
 			//we're using the synchronous loader... just call init right away
 			_init();
 		}
 	},
-	
+
 	ready = function(opts, func2execute) {
 		/*	{
 				onGetStatus:{UNKNOWN:FUNC(), NOT_CONNECTED:FUNC(), CONNECTED:FUNC()=}
@@ -124,7 +120,7 @@ var UNKNOWN = 1,
 		} 
 		
 	},
-	
+
 	getMe = function (requeryCallback /*optional*/) {
 		//If they didn't pass a callback, return the last known user
 		if (!requeryCallback) return _props.me;
@@ -133,7 +129,7 @@ var UNKNOWN = 1,
 	}
 /* PUBLIC PROPERTIES */	
 	;
-	// return definition of minifb
+	// return definition of fReady
 	return {
 		init: init,
 		ready: ready,
