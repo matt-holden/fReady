@@ -82,7 +82,10 @@
       <p><ul>
 				<li>Add fReady.js to your project!</li>
 				<li>Include a reference to the Facebook's SDK in your document head. (If omitted, fReady will load the SDK for you.)</li>
-				<li>Somewhere beneath the body element, add: <pre>&lt;div id="fb-root">&lt;/div></pre></li>
+				<li>Somewhere beneath the body element, add:
+<pre>&lt;div id="fb-root">&lt;/div>
+&lt;script type="text/javascript" src="/path/to/fReady.js">&lt;/script>
+</pre></li>
 			</ul>
 			</p>
 		
@@ -94,11 +97,12 @@
 <pre>
 // Initialze Facebook with your appID.
 fReady.init({
-  appId  : YOUR APP ID HERE,
+  appId  : YOUR APP ID HERE
+  //Pass other FB.init() properties here if you like
 });
 </pre>
 	
-<p>Next, pass fReady() one or more functions to be called after the user's login state has been determined.  If the user is connected to your app, their user info will also be pre-fetched, so you can access their personal information synchronously.</p>
+<p>Next, pass fReady() one or more functions to be called after the user's login status has been determined.  If the user is connected to your app, their user info will also be pre-fetched, so you can access their personal information synchronously.</p>
 	
 <p>A simple demo: who is the current user? (<span class="demoNameSpan"><a href="javascript:;">Tell me my name!</a></span>)</p>
 		
