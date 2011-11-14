@@ -4,7 +4,7 @@
   <meta charset='utf-8'>
 
   <title>matt-holden/fReady @ GitHub</title>
-
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.min.js"></script>
   <style type="text/css">
     body {
       margin-top: 1.0em;
@@ -28,6 +28,43 @@
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
   </style>
+  
+<script type="text/javascript">
+	$(document).ready(function(){
+		fReady.init({
+			appId		: YOUR APP ID HERE,
+			channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+			status		: true, // check login status
+			cookie		: true, // enable cookies to allow the server to access the session
+			oauth		: true, // enable OAuth 2.0
+			xfbml		: true,  // parse XFBML
+			
+			//notice the two extra properties!
+			queryScopeFirst : true,
+			scope		: scope
+		});
+		
+		
+		$name = $("#demoNameSpan");
+		
+		fReady(fucntion(response){
+			if (response.status == "connected"){
+				var your_name = fReady.getMe().name;
+				$name.html(your_name);
+			} else {
+				$("#demoNameSpan").click(function(){
+					fReady.login(function(){
+						if (fReady.isLoggedIn()){
+							var your_name = fReady.getMe().name;
+							$name.html(your_name);
+						}
+					})
+				});
+			}
+		});
+	})  
+</script>
+
 </head>
 
 <body>
@@ -62,11 +99,30 @@
     
 
 	<h2>Usage</h2>
-	<p>First, you'll need to initialize fReady, the same way you would call FB.init();</p>
+	<p>In it's simplest form -- This is the code running on this page!</p>
 	<pre>
-fReady.init(
+
+// Queue up a function to execute once we know something about the user.
+fReady(function(response){
+	alert( fReady.me.name ); //Your name is <span id="demoUserName">foo</span>
+});
+
+// Somewhere else in the code...
+// Initialze Facebook Just like you always have, with two optional properties at the end..
+fReady.init({
+	appId		: YOUR APP ID HERE,
+	channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+	status		: true, // check login status
+	cookie		: true, // enable cookies to allow the server to access the session
+	oauth		: true, // enable OAuth 2.0
+	xfbml		: true,  // parse XFBML
 	
-);
+	//notice the two extra properties!
+	queryScopeFirst : true,
+	scope		: scope
+});
+		
+
 </pre>
 	
 	
