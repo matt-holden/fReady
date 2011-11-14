@@ -1,5 +1,5 @@
 fReady = (function(){
-	
+
 //Basic Deferred callback queue taken graciously from http://www.dustindiaz.com/async-method-queues
 function Queue(optFns) {
 
@@ -37,9 +37,9 @@ Queue.prototype = {
     }
   }
 };
-	
+
 // fReady FTW... :)	
-	
+
 /* DATA LAYER */
 var _DAL = {
 	 	requeryMe : function(callback){
@@ -63,31 +63,30 @@ var _DAL = {
 		}	
 	},
 /* PRIVATE METHODS */
-	
+
 	//add a method to the "onReady" queue
 	//if the queue has already been flushed, it
 	//will execute automatically.
 	_addToReadyQueue = function(func){
 		_props.onReadyQueue.add(func);
 	},
-		
+
 /* PRIVATE PROPERTY OBJECT */
 	_props = {
 		onReadyQueue: new Queue()/*queue object*/,
 		onGetStatus:null,
 		onStatusChange:null,
-		
+
 		me:null,
 		lastKnownAuthResponse:null,
 		lastKnownLoginStatus:null,
 		//permissions requested in init() method
 		scope:null,
 		authdScope:null,
-		
-		
+
 		refreshFrequency: 5000 //default to 5 seconds
 	},
-	
+
 /* PUBLIC METHODS */
 	init = function(opts){
 		//This should normally be called just once.  If it gets called a second time, kick em out!
@@ -97,8 +96,17 @@ var _DAL = {
 		//local method called 'init' this will initialize the SDK,
 		//we will call this regarless of whether they're using the async load or not
 		var _init = function() {
-			//TODO!!! pass 'opts' variable and extract into FB.init()
-			FB.init(opts);
+
+			if (!opts.appId)
+				throw "Must pass an appId";
+			FB.init({
+				  appId  : opts.appId,
+				  channelURL : opts.channelURL || '', // Channel File
+				  status : opts.status || true, // check login status
+				  cookie : opts.cookie || true, // enable cookies to allow the server to access the session
+				  oauth  : opts.oauth || true, // enable OAuth 2.0
+				  xfbml  : opts.xfbml || true,  // parse XFBML
+			});
 
 			//keep track of the permissions we're going to want
 			_props.scope = opts.scope || '';
@@ -106,9 +114,9 @@ var _DAL = {
 			/// TODO: GET RID OF THE VERY NOT DRY CODE BELOW
 			FB.getLoginStatus(function(response){
 				_props.lastKnownAuthResponse = response.authResponse;
-				function callMethod(name){
+				function callOnGetStatusMethod(name){
 					_props.lastKnownLoginStatus = name;
-					
+
 					var onGetStatus = _props.onGetStatus;
 					onGetStatus && onGetStatus[name] && onGetStatus[name](response);
 				}
@@ -117,11 +125,14 @@ var _DAL = {
 					//queue up a call to 'getMe' and loginStatus calback
 					var q = new Queue();
 					q.add(function(){
-						_DAL.requeryMe(function(){
-							callMethod("CONNECTED");						
-						});
+						if (!fReady.getMe())
+							_DAL.requeryMe(function(){
+								callOnGetStatusMethod("CONNECTED");						
+							});
+						else
+							callOnGetStatusMethod("CONNECTED");
 					});
-					
+
 					//do we need to check scope first?
 					if (opts.queryScopeFirst && opts.scope){
 						_DAL.requeryAuthdScope(function(){
@@ -132,24 +143,29 @@ var _DAL = {
 					}					
 				}
 				else if (response.status == "not connected")
-					callMethod("NOT_CONNECTED");
+					callOnGetStatusMethod("NOT_CONNECTED");
 				else if (response.status == "unknown")
-					callMethod("UNKNOWN");
+					callOnGetStatusMethod("UNKNOWN");
 				else
 					throw "something CRAZY happened and the interwebs are crumbling";
-				
-				_props.lastKnownLoginStatus = 
+
 				//if there were any ready() callbacks, flush 'em
 				//and pass the login response from teh facebooks
+				if (!fReady.getMe())
+					_DAL.requeryMe(function(){
+						_props.onReadyQueue.flush(response);
+					});
+				else
 				_props.onReadyQueue.flush(response);
+
 			});
-			
+
 			// keep pinging facebook to make sure we have the latest authResponse...
 			// authResponseChange doesn't seem to get fired when logging out.
 			setInterval(function(){
 				FB.getLoginStatus();
 			}, _props.refreshFrequency);
-			
+
 			//subscribe to the authResponseChange event when authresponse changes, we'll 
 			//fire of any onStatusChange callbacks that have been registered
 			FB.Event.subscribe('auth.authResponseChange', function(response){
@@ -160,7 +176,7 @@ var _DAL = {
 					var onStatusChange = _props.onStatusChange;
 					onStatusChange && onStatusChange[name] && onStatusChange[name](response);
 				}
-				
+
 				if (response.status == "connected")
 					//get "me" object first!
 					_DAL.requeryMe(function(){
@@ -205,13 +221,13 @@ var _DAL = {
 		// Othwerwise, re-fetch the call to /me
 		_DAL.requeryMe(requeryCallback);
 	},
-	
+
 	getAuthdScope = function(requeryCallback){
 		if (!requeryCallback) return _props.authdScope;
 		//re-fetch list of authd permissions, then execute callback
 		_DAL.requeryAuthdScope(requeryCallback);
 	},
-	
+
 	isLoggedIn = function(){
 		return !!_props.lastKnownAuthResponse;
 	},
@@ -225,16 +241,16 @@ var _DAL = {
 				noAuth && noAuth();
 		})
 	},
-	
+
 	//this will be the core function for fReady, similar to jQuery's jQuery() function.
 	ready = function(opts, func2execute) {
-		
+
 		/* if readyfuncs is an object */
 		if (typeof opts === "object"){
 			_props.onGetStatus = opts.onGetStatus || {};
 			_props.onStatusChange = opts.onStatusChange || {};
 			_props.refreshFrequency = opts.refreshFrequency || _props.refreshFrequency; 
-			
+
 			if (func2execute && typeof func2execute !== undefined) {
 				_addToReadyQueue(func2execute);
 			}	
@@ -244,9 +260,9 @@ var _DAL = {
 		if (typeof opts === "function"){
 			_addToReadyQueue(opts);
 		} 
-		
+
 	};
-	
+
 	// return definition of fReady
 	ready.init = init;
 	ready.getMe = getMe;
