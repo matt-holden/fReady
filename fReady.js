@@ -108,7 +108,9 @@ var _DAL = {
 				_props.lastKnownAuthResponse = response.authResponse;
 				function callMethod(name){
 					_props.lastKnownLoginStatus = name;
-					_props.onGetStatus[name] && _props.onGetStatus[name](response);
+					
+					var onGetStatus = _props.onGetStatus;
+					onGetStatus && onGetStatus[name] && onGetStatus[name](response);
 				}
 
 				if (response.status == "connected") {	
@@ -154,7 +156,9 @@ var _DAL = {
 				_props.lastKnownAuthResponse = response.authResponse;
 				function callMethod(name){
 					_props.lastKnownLoginStatus = name;					
-					_props.onStatusChange[name] && _props.onStatusChange[name](response);
+
+					var onStatusChange = _props.onStatusChange;
+					onStatusChange && onStatusChange[name] && onStatusChange[name](response);
 				}
 				
 				if (response.status == "connected")
@@ -208,6 +212,20 @@ var _DAL = {
 		_DAL.requeryAuthdScope(requeryCallback);
 	},
 	
+	isLoggedIn = function(){
+		return !!_props.lastKnownAuthResponse;
+	},
+
+	//must be called from within a click handler, browser will block the popup
+	login = function(auth, noAuth){
+		FB.login(function(response){
+			if (response.status == "connected")
+				auth && auth();
+			else
+				noAuth && noAuth();
+		})
+	},
+	
 	//this will be the core function for fReady, similar to jQuery's jQuery() function.
 	ready = function(opts, func2execute) {
 		
@@ -233,6 +251,8 @@ var _DAL = {
 	ready.init = init;
 	ready.getMe = getMe;
 	ready.getAuthdScope = getAuthdScope;
+	ready.isLoggedIn = isLoggedIn;
+	ready.login = login;
 
 //	the ready() function will be assigned to the fReady variable as this function returns executes
 //  addiitonal methods are stored as properties on top of this function

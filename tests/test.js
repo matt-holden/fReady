@@ -1,8 +1,27 @@
 $(document).ready(function(){
 	
 	var scope = "manage_pages,publish_actions,offline_access,user_videos";
-	
+
+	fReady.init({
+		appId		: 314049385288127, // App ID
+		channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+		status		: true, // check login status
+		cookie		: true, // enable cookies to allow the server to access the session
+		oauth		: true, // enable OAuth 2.0
+		xfbml		: true,  // parse XFBML
+		queryScopeFirst : true,
+		scope		: scope
+	});
+		
 	module("Load Facebook SDK / Work with user status");
+
+	asyncTest("Test of fReady.isLoggedIn(). User should be logged in already.", function(){
+		fReady(function(){
+			ok(fReady.isLoggedIn(), "User is logged in");
+			start();
+		});
+	});
+	
 	asyncTest("Checks user's status", function(){
 		//define the number of tests we're expecting
 		//inform QUnit of this number
@@ -17,18 +36,9 @@ $(document).ready(function(){
 				}
 			}
 		});
-		
-		fReady.init({
-			appId		: 314049385288127, // App ID
-			channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
-			status		: true, // check login status
-			cookie		: true, // enable cookies to allow the server to access the session
-			oauth		: true, // enable OAuth 2.0
-			xfbml		: true,  // parse XFBML
-			queryScopeFirst : true,
-			scope		: scope
-		});
 	});
+	
+
 	
 
 	asyncTest("Able to re-initialize fReady / check that user is logged in", function(){
