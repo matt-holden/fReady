@@ -52,13 +52,11 @@
 				var your_name = fReady.getMe().name;
 				$name.html(your_name);
 			} else {
-				$("#demoNameSpan").click(function(){
+				$name.click(function(){
 					fReady.login(function(){
-						if (fReady.isLoggedIn()){
-							var your_name = fReady.getMe().name;
-							$name.html(your_name);
-						}
-					})
+						var your_name = fReady.getMe().name;
+						$name.html(your_name);
+					});
 				});
 			}
 		});
