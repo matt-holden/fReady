@@ -38,19 +38,6 @@ $(document).ready(function(){
 		});
 	});
 	
-
-	
-
-	asyncTest("Able to re-initialize fReady / check that user is logged in", function(){
-		//inform QUnit of this number
-		expect(1);
-		fReady(function(response){
-			equals(response.status, "connected", "User is logged in");
-			start();
-		});
-		
-	});
-	
 	asyncTest("Can run two .ready() functions", function(){
 		var numTests = 2;
 		expect(numTests);
@@ -68,6 +55,7 @@ $(document).ready(function(){
 	module("Play around with the fReady.getMe() method")
 	test("Get current, cached user object", function(){
 		var me = fReady.getMe();
+		console.log(me);
 		ok(me.username, "We have a user object!");
 	});
 	
