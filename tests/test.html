@@ -8,7 +8,12 @@
 		<script type="text/javascript" src="../utils.js"></script>
   </head>
   <body>
-		
+		<div>Teh Facebooks:
+		<a href="javascript:;" onclick="FB.login(null,{scope:'offline_access'})">Login</a>
+		<a href="javascript:;" onclick="FB.logout()">Logout</a>
+		<a href="test.html">{Test again}</a>
+		</div>
+			
     <h1 id="qunit-header">QUnit example</h1>
     <h2 id="qunit-banner"></h2>
     <h2 id="qunit-userAgent"></h2>
@@ -16,10 +21,6 @@
     </ol>
 
 		<div id="fb-root"></div>
-		<script type="text/javascript">
-//		window.FB_APP_ID = YOUR APP ID
-			window.FB_APP_ID = 314049385288127;
-		</script>
     <script type="text/javascript" src="../fReady.js"></script>
 		<script type="text/javascript" src="test.js"></script>
 		
@@ -28,11 +29,7 @@
 
 		<div id="message"></div>
 		
-		<div>
-		<a href="javascript:;" onclick="FB.login()">Login()</a>
-		<a href="javascript:;" onclick="FB.logout()">Logout()</a>
-		<a href="test.html">Test again()</a>
-		</div>
+
 		
 
 		

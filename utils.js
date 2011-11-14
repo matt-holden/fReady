@@ -1,4 +1,4 @@
-//Deferred callback queue taken graciously from http://www.dustindiaz.com/async-method-queues
+//Basic deferred callback queue taken graciously from http://www.dustindiaz.com/async-method-queues
 function Queue(optFns) {
 
   // store your callbacks
