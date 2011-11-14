@@ -142,8 +142,8 @@ var _DAL = {
 						q.flush();
 					}					
 				}
-				else if (response.status == "not connected")
-					callOnGetStatusMethod("NOT_CONNECTED");
+				else if (response.status == "not_authorized")
+					callOnGetStatusMethod("NOT_AUTHORIZED");
 				else if (response.status == "unknown")
 					callOnGetStatusMethod("UNKNOWN");
 				else
@@ -176,7 +176,7 @@ var _DAL = {
 					var onStatusChange = _props.onStatusChange;
 					onStatusChange && onStatusChange[name] && onStatusChange[name](response);
 				}
-				
+								console.log(response.status);				
 				if (response.status == "connected")
 					//get "me" object first!
 					_DAL.requeryMe(function(){
@@ -185,8 +185,8 @@ var _DAL = {
 							callMethod("CONNECTED");
 						});
 					});
-				else if (response.status == "not connected")
-					callMethod("NOT_CONNECTED");
+				else if (response.status == "not_authorized")
+					callMethod("NOT_AUTHORIZED");
 				else if (response.status == "unknown")
 					callMethod("UNKNOWN");
 				else
