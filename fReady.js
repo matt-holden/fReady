@@ -83,8 +83,7 @@ var _DAL = {
 		//permissions requested in init() method
 		scope:null,
 		authdScope:null,
-		
-		
+	
 		refreshFrequency: 5000 //default to 5 seconds
 	},
 	
@@ -97,8 +96,17 @@ var _DAL = {
 		//local method called 'init' this will initialize the SDK,
 		//we will call this regarless of whether they're using the async load or not
 		var _init = function() {
-			//TODO!!! pass 'opts' variable and extract into FB.init()
-			FB.init(opts);
+			
+			if (!opts.appId)
+				throw "Must pass an appId";
+			FB.init({
+				  appId  : opts.appId,
+				  channelURL : opts.channelURL || '', // Channel File
+				  status : opts.status || true, // check login status
+				  cookie : opts.cookie || true, // enable cookies to allow the server to access the session
+				  oauth  : opts.oauth || true, // enable OAuth 2.0
+				  xfbml  : opts.xfbml || true,  // parse XFBML
+			});
 
 			//keep track of the permissions we're going to want
 			_props.scope = opts.scope || '';
@@ -106,7 +114,7 @@ var _DAL = {
 			/// TODO: GET RID OF THE VERY NOT DRY CODE BELOW
 			FB.getLoginStatus(function(response){
 				_props.lastKnownAuthResponse = response.authResponse;
-				function callMethod(name){
+				function callOnGetStatusMethod(name){
 					_props.lastKnownLoginStatus = name;
 					
 					var onGetStatus = _props.onGetStatus;
@@ -117,9 +125,12 @@ var _DAL = {
 					//queue up a call to 'getMe' and loginStatus calback
 					var q = new Queue();
 					q.add(function(){
-						_DAL.requeryMe(function(){
-							callMethod("CONNECTED");						
-						});
+						if (!fReady.getMe())
+							_DAL.requeryMe(function(){
+								callOnGetStatusMethod("CONNECTED");						
+							});
+						else
+							callOnGetStatusMethod("CONNECTED");
 					});
 					
 					//do we need to check scope first?
@@ -132,16 +143,21 @@ var _DAL = {
 					}					
 				}
 				else if (response.status == "not connected")
-					callMethod("NOT_CONNECTED");
+					callOnGetStatusMethod("NOT_CONNECTED");
 				else if (response.status == "unknown")
-					callMethod("UNKNOWN");
+					callOnGetStatusMethod("UNKNOWN");
 				else
 					throw "something CRAZY happened and the interwebs are crumbling";
 				
-				_props.lastKnownLoginStatus = 
 				//if there were any ready() callbacks, flush 'em
 				//and pass the login response from teh facebooks
+				if (!fReady.getMe())
+					_DAL.requeryMe(function(){
+						_props.onReadyQueue.flush(response);
+					});
+				else
 				_props.onReadyQueue.flush(response);
+				
 			});
 			
 			// keep pinging facebook to make sure we have the latest authResponse...
