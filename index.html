@@ -25,44 +25,36 @@
     a { color: #4c67ad; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
+    pre { background: #2A2A2A; color: #DADAFA; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
   </style>
   
 <script type="text/javascript">
 	$(document).ready(function(){
-		fReady.init({
-			appId		: 314049385288127,
-			channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
-			status		: true, // check login status
-			cookie		: true, // enable cookies to allow the server to access the session
-			oauth		: true, // enable OAuth 2.0
-			xfbml		: true,  // parse XFBML
-			
-			//notice the two extra properties!
-			queryScopeFirst : true,
-			scope		: ""
-		});
-		
-		
-		$name = $("#demoNameSpan");
+
+		$name = $(".demoNameSpan");
 		
 		fReady(function(response){
 			if (response.status == "connected"){
-				console.log(fReady.getMe());
 				var your_name = fReady.getMe().name;
 				$name.html(your_name);
 			} else {
 				$name.click(function(){
 					fReady.login(function(){
-						var your_name = fReady.getMe().name;
-						$name.html(your_name);
+						var me = fReady.getMe(function(me){
+								var your_name = me.name;
+								$name.html(your_name);							
+						});
 					});
 				});
 			}
 		});
-	})  
+		
+		fReady.init({
+			appId: 314049385288127
+		}); 
+	});
 </script>
 
 </head>
@@ -80,86 +72,71 @@
     </div>
 
     <h1><a href="https://github.com/matt-holden/fReady">fReady</a>
-      <span class="small">by <a href="https://github.com/matt-holden">matt-holden</a></span></h1>
+      <span class="small">by <a href="https://github.com/matt-holden">matt holden</a></span></h1>
 
     <div class="description">
-      fReady is a light wrapper to Facebook Platform's Javascript SDK.
+      fReady (or, "Freddy") is a light wrapper to Facebook Platform's Javascript SDK, with zero dependencies.
     </div>
 
-    
-
-    
-      <h2>Dependencies</h2>
-      <p>None!</p>
-    
-
-    
       <h2>Install</h2>
-      <p>Just add fReady.js to your project and go!</p>
+      <p><ul>
+				<li>Add fReady.js to your project!</li>
+				<li>Include a reference to the Facebook's SDK in your document head. (If omitted, fReady will load the SDK for you.)</li>
+				<li>Somewhere beneath the body element, add: <pre>&lt;div id="fb-root">&lt;/div></pre></li>
+			</p>
     
 
 	<h2>Usage</h2>
-	<p>In it's simplest form -- This is the code running on this page!</p>
-	<pre>
+	<p>Start by calling fReady.init()</p>
 
-// Queue up a function to execute once we know something about the user.
-fReady(function(response){
-	alert( fReady.me.name ); //Your name is <span id="demoUserName">foo</span>
-});
-
-// Somewhere else in the code...
-// Initialze Facebook Just like you always have, with two optional properties at the end..
+<pre>
+// Initialze Facebook with your appID.
 fReady.init({
-	appId		: YOUR APP ID HERE,
-	channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
-	status		: true, // check login status
-	cookie		: true, // enable cookies to allow the server to access the session
-	oauth		: true, // enable OAuth 2.0
-	xfbml		: true,  // parse XFBML
-	
-	//notice the two extra properties!
-	queryScopeFirst : true,
-	scope		: scope
+  appId  : YOUR APP ID HERE,
 });
-		
-
 </pre>
 	
+<p>Next, pass fReady() one or more functions to be called after the user's login state has been determined.  If the user is connected to your app, their user info will also be pre-fetched, so you can access their personal information synchronously.</p>
+	
+<p>A simple demo: who is the current user? (<span class="demoNameSpan"><a href="javascript:;">Tell me my name!</a></span>)</p>
+		
+<pre>
+fReady(function(){
+  if (fReady.isLoggedIn()){
+    var your_name = fReady.getMe().name;
+    alert(your_name) //will alert <span class="demoNameSpan">Your Name</span>
+  }
+});
+</pre>
+	
+<p>fReady also supports pre-defined callbacks to be executed in response to changes in your user's login status.  Much more functionality is on its way, all aiming to streamline common Platform tasks. It is currently in a pre-pre-pre alpha state, and documentation is ongoing.  Feel free to help!</p>
+
+<h2>License</h2>
+<p>Totally, completely free to use as you like.  Just give me a shoutout.</p>
 	
 
     
-		<h2>License</h2>
-		<p>Totally, completely free to use as you like.  Just give me a shoutout.</p>
-	
+<h2>Author</h2>
+<p>Matthew Holden (jftholden@yahoo.com)</p>
 
-    
-      <h2>Authors</h2>
-      <p>Matthew Holden (jftholden@yahoo.com)
-<br/>      </p>
-    
+ 
 
-    
-      <h2>Contact</h2>
-      <p> (jftholden@yahoo.com)
-<br/>      </p>
-    
+	  <h2>Download</h2>
+	  <p>
+	    You can download this project in either
+	    <a href="https://github.com/matt-holden/fReady/zipball/master">zip</a> or
+	    <a href="https://github.com/matt-holden/fReady/tarball/master">tar formats.
+	  </p>
+	  <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+	    by running:
+	    <pre>$ git clone git://github.com/matt-holden/fReady</pre>
+	  </p>
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/matt-holden/fReady/zipball/master">zip</a> or
-      <a href="https://github.com/matt-holden/fReady/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/matt-holden/fReady</pre>
-    </p>
+	  <div class="footer">
+	    get the source code on GitHub : <a href="https://github.com/matt-holden/fReady">matt-holden/fReady</a>
+	  </div>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/matt-holden/fReady">matt-holden/fReady</a>
-    </div>
-
-  </div>
-  <div id="fb-root"></div>
+	</div>
+	<div id="fb-root"></div>
 </body>
 </html>
