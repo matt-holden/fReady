@@ -33,7 +33,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		fReady.init({
-			appId		: YOUR APP ID HERE,
+			appId		: 314049385288127,
 			channelURL	: '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
 			status		: true, // check login status
 			cookie		: true, // enable cookies to allow the server to access the session
@@ -42,14 +42,15 @@
 			
 			//notice the two extra properties!
 			queryScopeFirst : true,
-			scope		: scope
+			scope		: ""
 		});
 		
 		
 		$name = $("#demoNameSpan");
 		
-		fReady(fucntion(response){
+		fReady(function(response){
 			if (response.status == "connected"){
+				console.log(fReady.getMe());
 				var your_name = fReady.getMe().name;
 				$name.html(your_name);
 			} else {
@@ -159,6 +160,6 @@ fReady.init({
     </div>
 
   </div>
-
+  <div id="fb-root"></div>
 </body>
 </html>
