@@ -113,14 +113,18 @@
 	<p>You can still use the Javascript SDK!  All <code>FB.*</code> methods still work.</p><p>Start by calling fReady.init()</p>
 
 <pre>
+// Add reference to fReady
+&lt;script type="text/javascript" src="/path/to/fReady.js">&lt;/script>
+
 // Initialze Facebook with your appID.
 fReady.init({
   appId  : YOUR APP ID HERE
   //Pass other FB.init() properties here if you like
+  //otherwise, defaults are assumed
 });
 </pre>
 	
-<p>Next, pass fReady() one or more functions to execute after the user's login status has been determined.</p>
+<p>Next, pass fReady() one or more functions to execute after the user's login status is determined.</p>
 	
 <p>This example checks if current user is connected to your app, and alerts their name.<br />
 <span class="demoNameSpan">Try it out,  <a href="javascript:;">tell me my name.</a></span></p>
@@ -133,8 +137,8 @@ fReady(function(){
 });
 </pre>
 
-<p>You can also pass fReady() specific functions to execute once it's determined the user's status. fReady can also store
-functions to execute when the user's status changes.  <em>You may omit any of these functions.</em>
+<p>You can also pass fReady() specific functions to execute after the user's status is determined. fReady can also store
+functions to execute when the user's status changes.  <em>You may omit any or all of these functions.</em>
 The <code>onStatusChange</code> functions are especially useful if you are concerned about the user logging in or out
 while interacting with your app:
 </p>
@@ -163,7 +167,7 @@ fReady.getMe() // User object;
 fReady.isConnected() //is the user connected to your app?
 fReady.getAuthdScope() //object specifying which permissions your user has authorized
  
-// Ask fReady to double-check with Facebook, if you think it needs a second look:
+// Ask fReady to double-check the values with Facebook:
 fReady.getMe( function( me ) {} );
 fReady.isConnected( function( bool ) {} );
 fReady.getAuthdScope( function( authdScope ) {} );
