@@ -15,9 +15,9 @@ $(document).ready(function(){
 		
 	module("Load Facebook SDK / Work with user status");
 
-	asyncTest("Test of fReady.isLoggedIn(). User should be logged in already.", function(){
+	asyncTest("Test of fReady.isConnected(). User should be logged in already.", function(){
 		fReady(function(){
-			ok(fReady.isLoggedIn(), "User is logged in");
+			ok(fReady.isConnected(), "User is logged in");
 			start();
 		});
 	});
@@ -55,7 +55,6 @@ $(document).ready(function(){
 	module("Play around with the fReady.getMe() method")
 	test("Get current, cached user object", function(){
 		var me = fReady.getMe();
-		console.log(me);
 		ok(me.username, "We have a user object!");
 	});
 	
