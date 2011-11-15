@@ -47,8 +47,8 @@
 		
 		fReady(function(response){
 			if (response.status == "connected"){
-				var your_name = 'Your name is ' + fReady.getMe().name;
-				$name.html(your_name);
+				var your_name = 'Your name is ' + fReady.getMe().name + '.';
+				$name.html(your_name).addClass('nameLoaded';
 			} else {
 				$name.click(function(){
 					fReady.login(function(){
