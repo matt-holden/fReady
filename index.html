@@ -54,7 +54,7 @@
 					fReady.login(function(){
 						var me = fReady.getMe(function(me){
 								var your_name = 'Your name is ' + fReady.getMe().name + ', by the way.';
-								$name.html(your_name);							
+								$name.html(your_name).addClass('nameLoaded');							
 						});
 					});
 				});
