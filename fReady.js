@@ -1,3 +1,10 @@
+/*
+* fReady.js
+* Copyright Matt Holden, 2011
+*
+* Use this however you like :-)
+*/
+
 fReady = (function(){
 	
 //Basic Deferred callback queue taken graciously from http://www.dustindiaz.com/async-method-queues
@@ -78,8 +85,8 @@ var _DAL = {
 		onStatusChange:null,
 		
 		me:null,
-		lastKnownAuthResponse:null,
-		lastKnownLoginStatus:null,
+		lastLoginResponse:null,
+		
 		//permissions requested in init() method
 		scope:null,
 		authdScope:null,
@@ -93,6 +100,13 @@ var _DAL = {
 		if (init.hasBeenCalled) return;
 		init.hasBeenCalled = true;
 
+		//add <div id="fb-root"></div> if it doesn't exist
+		var fbRoot = document.getElementById("fb-root");
+		if (!fbRoot){
+			fbRoot = document.createElement('div');
+			fbRoot.setAttribute('id','fb-root');
+			document.getElementsByTagName('body')[0].appendChild(fbRoot);
+		}
 		//local method called 'init' this will initialize the SDK,
 		//we will call this regarless of whether they're using the async load or not
 		var _init = function() {
@@ -113,9 +127,9 @@ var _DAL = {
 
 			/// TODO: GET RID OF THE VERY NOT DRY CODE BELOW
 			FB.getLoginStatus(function(response){
-				_props.lastKnownAuthResponse = response.authResponse;
+				_props.lastLoginResponse = response;
+
 				function callOnGetStatusMethod(name){
-					_props.lastKnownLoginStatus = name;
 					
 					var onGetStatus = _props.onGetStatus;
 					onGetStatus && onGetStatus[name] && onGetStatus[name](response);
@@ -169,14 +183,13 @@ var _DAL = {
 			//subscribe to the authResponseChange event when authresponse changes, we'll 
 			//fire of any onStatusChange callbacks that have been registered
 			FB.Event.subscribe('auth.authResponseChange', function(response){
-				_props.lastKnownAuthResponse = response.authResponse;
+				_props.lastLoginResponse = response;
+				
 				function callMethod(name){
-					_props.lastKnownLoginStatus = name;					
-
 					var onStatusChange = _props.onStatusChange;
 					onStatusChange && onStatusChange[name] && onStatusChange[name](response);
 				}
-								console.log(response.status);				
+				
 				if (response.status == "connected")
 					//get "me" object first!
 					_DAL.requeryMe(function(){
@@ -228,8 +241,8 @@ var _DAL = {
 		_DAL.requeryAuthdScope(requeryCallback);
 	},
 	
-	isLoggedIn = function(){
-		return !!_props.lastKnownAuthResponse;
+	isConnected = function(){
+		return _props.lastLoginResponse.status == "connected";
 	},
 
 	//must be called from within a click handler, browser will block the popup
@@ -267,7 +280,10 @@ var _DAL = {
 	ready.init = init;
 	ready.getMe = getMe;
 	ready.getAuthdScope = getAuthdScope;
-	ready.isLoggedIn = isLoggedIn;
+	ready.isConnected = isConnected;
+//	ready.getAuthResponse = getAuthResponse;
+//	ready.getLoginStatus = getLoginStatus;
+//	ready.getLoginResponse = getLoginResponse;
 	ready.login = login;
 
 //	the ready() function will be assigned to the fReady variable as this function returns executes

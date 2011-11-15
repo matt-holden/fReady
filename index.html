@@ -5,7 +5,6 @@
 
   <title>matt-holden/fReady @ GitHub</title>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.min.js"></script>
-  <script type="text/javascript" src="fReady.js"></script>
   <style type="text/css">
     body {
       margin-top: 1.0em;
@@ -37,13 +36,13 @@
 		
 		fReady(function(response){
 			if (response.status == "connected"){
-				var your_name = fReady.getMe().name;
+				var your_name = 'Your name is ' + fReady.getMe().name;
 				$name.html(your_name);
 			} else {
 				$name.click(function(){
 					fReady.login(function(){
 						var me = fReady.getMe(function(me){
-								var your_name = me.name;
+								var your_name = 'Your name is ' + fReady.getMe().name + ', by the way.';
 								$name.html(your_name);							
 						});
 					});
@@ -60,6 +59,7 @@
 </head>
 
 <body>
+  <script type="text/javascript" src="fReady.js"></script>
   <a href="https://github.com/matt-holden/fReady"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
   <div id="container">
@@ -70,29 +70,34 @@
       <a href="https://github.com/matt-holden/fReady/tarball/master">
         <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
     </div>
-
+	<div class="fb-like" data-href="http://matt-holden.github.com/fReady/" data-send="true" data-width="450" data-show-faces="false"></div>
     <h1><a href="https://github.com/matt-holden/fReady">fReady</a>
       <span class="small">by <a href="https://github.com/matt-holden">matt holden</a></span></h1>
 
     <div class="description">
-      fReady (or, "Freddy") is a light wrapper to Facebook's Javascript SDK, with zero dependencies.
+      <p>Kick-start your Facebook Platform development!</p>
+      
+      <p>fReady (or, "Freddy") is a light wrapper to Facebook's Javascript SDK, with zero dependencies.
+      Write less code, and have more fun!</p>
+      
+      
     </div>
-
+	<h4><em>This project is in its earliest infancy, and the documentation is far from complete.  
+			If you think it's cool, feel free to contribute.</em></h4>
       <h2>Install</h2>
-      <p><ul>
-				<li>Add fReady.js to your project!</li>
-				<li>Include a reference to the Facebook's SDK in your document head. (If omitted, fReady will load the SDK for you.)</li>
-				<li>Somewhere beneath the body element, add:
-<pre>&lt;div id="fb-root">&lt;/div>
-&lt;script type="text/javascript" src="/path/to/fReady.js">&lt;/script>
-</pre></li>
-			</ul>
-			</p>
+	<p>
+		<ul>
+			<li>Add fReady.js to your project, then add this line in your <code>&lt;body></code><pre>&lt;script type="text/javascript" src="/path/to/fReady.js">&lt;/script></li>
+			<li>That's it!</li>
+		</ul>
+	</p>
+	<p>
+		fReady will create the <code>fb-root</code> element and download the Javascript SDK for you. (Choosing a specific locale is not yet supported.)  However, you
+		can still load the SDK synchronously and include the <code>fb-root</code> element if you prefer -- fReady will abide.
+	</p>
 		
-    
-
 	<h2>Usage</h2>
-	<p>Start by calling fReady.init()</p>
+	<p>You can still use the Javascript SDK!  All <code>FB.*</code> methods still work.</p><p>Start by calling fReady.init()</p>
 
 <pre>
 // Initialze Facebook with your appID.
@@ -102,30 +107,60 @@ fReady.init({
 });
 </pre>
 	
-<p>Next, pass fReady() one or more functions to be called after the user's login status has been determined.  If the user is connected to your app, their user info will also be pre-fetched, so you can access their personal information synchronously.</p>
+<p>Next, pass fReady() one or more functions to execute after the user's login status has been determined.</p>
 	
-<p>A simple demo: who is the current user? (<span class="demoNameSpan"><a href="javascript:;">Tell me my name!</a></span>)</p>
-		
+<p>This example checks if current user is connected to your app, and alerts their name.<br />
+<span class="demoNameSpan">Try it out,  <a href="javascript:;">tell me my name.</a></span></p>
 <pre>
 fReady(function(){
-  if (fReady.isLoggedIn()){
+  if (fReady.isConnected()){
     var your_name = fReady.getMe().name;
-    alert(your_name) //<span class="demoNameSpan">Your Name</span>
+    alert(your_name) //User's name.  (<span class="demoNameSpan"></span>)
   }
 });
 </pre>
-	
-<p>fReady also supports pre-defined callbacks to be executed in response to changes in your user's login status.  Much more functionality is on its way, all aiming to streamline common Platform tasks. It is currently in a pre-pre-pre alpha state, and documentation is ongoing.  Feel free to help!</p>
+
+<p>You can also pass fReady() specific functions to execute once it's determined the user's status. fReady can also store
+functions to execute when the user's status changes.  <em>You may omit any of these functions.</em>
+The <code>onStatusChange</code> functions are especially useful if you are concerned about the user logging in or out
+while interacting with your app:
+</p>
+<pre>
+fReady({
+  onGetStatus:{
+    CONNECTED: function(response){},
+    NOT_AUTHORIZED: function(response){},
+    UNKNOWN: function(response){}
+  },
+  onStatusChange:{
+    CONNECTED: function(response){},
+    NOT_AUTHORIZED: function(response){},
+    UNKNOWN: function(response){}
+  }
+});
+</pre>
+
+<p>fReady offers some accessor methods to the data it has cached (user object, login status and authorized permissions).  
+This data is accessible synchronously (cached) or asynchronously (fReady will re-fetch the data from Facebook).
+This is where fReady becomes so user-friendly -- on-demand access to pre-cached information.  Woo-hoo!</p>
+
+<pre>
+// Use the cached information:
+fReady.getMe() // User object;
+fReady.isConnected() //is the user connected to your app?
+fReady.getAuthdScope() //object specifying which permissions your user has authorized
+ 
+// Ask fReady to double-check with Facebook, if you think it needs a second look:
+fReady.getMe( function( me ) {} );
+fReady.isConnected( function( bool ) {} );
+fReady.getAuthdScope( function( authdScope ) {} );
+</pre>
 
 <h2>License</h2>
-<p>Totally, completely free to use as you like.  Just give me a shoutout.</p>
-	
-
+<p>It's yours.</p>
     
 <h2>Author</h2>
 <p>Matthew Holden (jftholden@yahoo.com)</p>
-
- 
 
 	  <h2>Download</h2>
 	  <p>
@@ -143,6 +178,6 @@ fReady(function(){
 	  </div>
 
 	</div>
-	<div id="fb-root"></div>
+	<div id=<code>fb-root</code>></div>
 </body>
 </html>
