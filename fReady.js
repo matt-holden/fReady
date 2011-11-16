@@ -176,9 +176,9 @@ var _DAL = {
 			
 			// keep pinging facebook to make sure we have the latest authResponse...
 			// authResponseChange doesn't seem to get fired when logging out.
-			setInterval(function(){
+			/* setInterval(function(){
 				FB.getLoginStatus();
-			}, _props.refreshFrequency);
+			}, _props.refreshFrequency); */
 			
 			//subscribe to the authResponseChange event when authresponse changes, we'll 
 			//fire of any onStatusChange callbacks that have been registered
