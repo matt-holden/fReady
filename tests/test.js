@@ -77,5 +77,32 @@ $(document).ready(function(){
 			start();
 		});
 	});
+	
+	module("Try to get user_hometown permission");
+	asyncTest("Try to get user_hometown permission", function(){
+		$("#message").html("CLICK TO LOG IN").click(function(){
+			fReady.login(function(){
+				ok(true, "User authorized");
+				start();
+			}, "user_hometown", function(){
+				ok(true, "user clicked no");
+			});			
+		});
+	});
+
+	module("Ask for a login without any permissions");
+	asyncTest("Try to get user_hometown permission", function(){
+		var $message = $("#message").html("CLICK TO LOG IN").click(function(){
+			fReady.login(function(){
+				ok(true, "User authorized");
+				$message.html('');
+				start();
+			}, function(){
+				$message.html('');
+				ok(true, "user clicked no");
+				start();
+			});			
+		});
+	});
 
 });

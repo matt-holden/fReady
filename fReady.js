@@ -4,7 +4,7 @@
 *
 * Use this however you like :-)
 */
-
+;
 fReady = (function(){
 	
 //Basic Deferred callback queue taken graciously from http://www.dustindiaz.com/async-method-queues
@@ -175,7 +175,7 @@ var _DAL = {
 			});
 			
 			// keep pinging facebook to make sure we have the latest authResponse...
-			// authResponseChange doesn't seem to get fired when logging out.
+			// authResponseChange doesn't seem to get fired when user logs out.
 			setInterval(function(){
 				FB.getLoginStatus();
 			}, _props.refreshFrequency);
@@ -245,14 +245,22 @@ var _DAL = {
 		return _props.lastLoginResponse.status == "connected";
 	},
 
-	//must be called from within a click handler, browser will block the popup
-	login = function(auth, noAuth){
+	//must be called from within a click handler otherwise the browser will block the popup
+	login = function(auth, scope, noAuth){
+		//sort out what exactly they passed
+		noAuth = typeof scope == "function" ? scope : noAuth;
+		scope = typeof scope == "string" ? scope : "";
+
 		FB.login(function(response){
 			if (response.status == "connected")
 				auth && auth();
 			else
 				noAuth && noAuth();
-		})
+		}, {scope: (typeof scope == "string" && scope || "")});
+	},
+	//this method just exists as a nice companion to fReady.login(); no real reason to have it
+	logout = function(){
+		FB.logout();
 	},
 	
 	//this will be the core function for fReady, similar to jQuery's jQuery() function.
